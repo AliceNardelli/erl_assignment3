@@ -12,10 +12,23 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   erl2
   message_generation
+  geometry_msgs
+  sensor_msgs
+  move_base_msgs
+  std_msgs
+  nav_msgs
+  actionlib
+  actionlib_msgs
+  motion_plan
+  armor_msgs
 )
 
+
+
+
+
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(OpenCV REQUIRED)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -58,6 +71,8 @@ find_package(catkin REQUIRED COMPONENTS
  add_service_files(
    FILES
    Marker.srv
+   Announcement.srv
+   ArmorInterface.srv
  )
 
 ## Generate actions in the 'action' folder
@@ -70,7 +85,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
  generate_messages(
    DEPENDENCIES
-   erl2  # Or other packages containing msgs
+   erl2  geometry_msgs sensor_msgs  move_base_msgs   std_msgs nav_msgs actionlib_msgs motion_plan armor_msgs
+# Or other packages containing msgs
  )
 
 ################################################
@@ -102,23 +118,17 @@ find_package(catkin REQUIRED COMPONENTS
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES exp_assignment3
-#  CATKIN_DEPENDS roscpp rospy
-#  DEPENDS system_lib
-)
 
+catkin_package( 
+  DEPENDS OpenCV
+)
 ###########
 ## Build ##
 ###########
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
-)
+
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
@@ -133,7 +143,17 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
- add_executable(final_oracle src/simulation.cpp)
+
+include_directories(
+ 
+  ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
+)
+
+
+add_executable(final_oracle src/simulation.cpp)
+
+
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -150,6 +170,9 @@ include_directories(
    ${catkin_LIBRARIES}
  )
 
+
+
+
 #############
 ## Install ##
 #############
@@ -159,10 +182,10 @@ include_directories(
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# catkin_install_python(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+ catkin_install_python(PROGRAMS
+   scripts/FSM.py scripts/wall_follow_service_m.py scripts/AnnounceHypotesis.py scripts/ArmorInterface.py
+   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+ )
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
